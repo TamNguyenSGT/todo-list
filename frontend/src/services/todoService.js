@@ -1,8 +1,24 @@
-import axios from 'axios';
+const API = 'http://localhost:3001/api/todos';
 
-const BASE_URL = 'http://localhost:3001/api/todos';
+export const getTodos = async () => (await fetch(API)).json();
 
-export const fetchTasks = () => axios.get(`${BASE_URL}/tasks`);
-export const addTask = (title) => axios.post(`${BASE_URL}/tasks`, { title });
-export const deleteTask = (id) => axios.delete(`${BASE_URL}/tasks/${id}`);
-export const updateTask = (id, task) => axios.put(`${BASE_URL}/tasks/${id}`, task);
+export const addTodo = async (title) => {
+  const res = await fetch(API, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ title })
+  });
+  return res.json();
+};
+
+export const updateTodo = async (id, data) => {
+  await fetch(`${API}/${id}`, {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  });
+};
+
+export const deleteTodo = async (id) => {
+  await fetch(`${API}/${id}`, { method: 'DELETE' });
+};

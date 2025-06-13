@@ -1,52 +1,43 @@
-// TodoItem.js
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { updateTodo, deleteTodo } from '../services/todoService';
 
-function TodoItem({
-  task,
-  editingTaskId,
-  editingText,
-  onToggle,
-  onStartEdit,
-  onDelete,
-  onEditChange,
-  onSaveEdit,
-  onCancelEdit,
-  theme,
-  t,
-}) {
-  const isEditing = editingTaskId === task.id;
+const TodoItem = ({ todo, setTodos, todos }) => {
+  const [editMode, setEditMode] = useState(false);
+  const [title, setTitle] = useState(todo.title);
+
+  const toggleComplete = async () => {
+    await updateTodo(todo.id, { title: todo.title, completed: !todo.completed });
+    setTodos(todos.map(t => t.id === todo.id ? { ...t, completed: !t.completed } : t));
+  };
+
+  const handleDelete = async () => {
+    await deleteTodo(todo.id);
+    setTodos(todos.filter(t => t.id !== todo.id));
+  };
+
+  const handleUpdate = async () => {
+    await updateTodo(todo.id, { title, completed: todo.completed });
+    setTodos(todos.map(t => t.id === todo.id ? { ...t, title } : t));
+    setEditMode(false);
+  };
 
   return (
-    <motion.li
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.2 }}
-      style={{ ...theme.taskItem, margin: '10px 0', display: 'flex', alignItems: 'center', gap: 10, padding: 10, borderRadius: 6 }}
-    >
-      <input type="checkbox" checked={task.completed} onChange={() => onToggle(task)} />
-      {isEditing ? (
+    <li>
+      <input type="checkbox" checked={todo.completed} onChange={toggleComplete} />
+      {editMode ? (
         <>
-          <input
-            value={editingText}
-            onChange={(e) => onEditChange(e.target.value)}
-            style={{ flexGrow: 1, padding: '6px', border: '1px solid #ccc', borderRadius: 6 }}
-          />
-          <button onClick={() => onSaveEdit(task)} style={theme.saveButton}>{t.save}</button>
-          <button onClick={onCancelEdit} style={theme.cancelButton}>{t.cancel}</button>
+          <input value={title} onChange={e => setTitle(e.target.value)} />
+          <button onClick={handleUpdate}>Save</button>
         </>
       ) : (
         <>
-          <span style={{ flexGrow: 1, textDecoration: task.completed ? 'line-through' : 'none', color: theme.text }}>
-            {task.title}
-          </span>
-          <button onClick={() => onStartEdit(task)} style={theme.editButton}>{t.edit}</button>
-          <button onClick={() => onDelete(task.id)} style={theme.deleteButton}>{t.delete}</button>
+          <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>{todo.title}</span>
+          <button onClick={() => setEditMode(true)}>Edit</button>
         </>
       )}
-    </motion.li>
+      <button onClick={handleDelete}>Delete</button>
+    </li>
   );
-}
+};
 
 export default TodoItem;
