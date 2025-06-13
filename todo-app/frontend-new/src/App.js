@@ -34,9 +34,11 @@ function App() {
   const fetchTasks = useCallback(async () => {
     try {
       const res = await axios.get(`${BASE_URL}/tasks`);
+      console.log('✅ Loaded tasks:', res.data);
       setTasks(res.data);
       setError(null);
-    } catch {
+    } catch (err) {
+      console.error('❌ Failed to load tasks:', err);
       setError(t.errorLoad);
     }
   }, []);
@@ -49,9 +51,11 @@ function App() {
     if (!newTask.trim()) return;
     try {
       await axios.post(`${BASE_URL}/tasks`, { title: newTask });
+      console.log('➕ Added task:', newTask);
       setNewTask('');
       fetchTasks();
-    } catch {
+    } catch (err) {
+      console.error('❌ Failed to add task:', err);
       setError(t.errorAdd);
     }
   };
@@ -59,8 +63,10 @@ function App() {
   const deleteTask = async (id) => {
     try {
       await axios.delete(`${BASE_URL}/tasks/${id}`);
+      console.log('🗑️ Deleted task ID:', id);
       fetchTasks();
-    } catch {
+    } catch (err) {
+      console.error('❌ Failed to delete task ID:', id, err);
       setError(t.errorDelete);
     }
   };
@@ -71,8 +77,10 @@ function App() {
         title: task.title,
         completed: !task.completed,
       });
+      console.log(`🔁 Toggled task "${task.title}" to ${!task.completed ? 'incomplete' : 'completed'}`);
       fetchTasks();
-    } catch {
+    } catch (err) {
+      console.error('❌ Failed to toggle task:', task, err);
       setError(t.errorUpdate);
     }
   };
@@ -84,22 +92,26 @@ function App() {
         title: editingText,
         completed: task.completed,
       });
+      console.log('💾 Saved edit for task ID:', task.id, 'New title:', editingText);
       setEditingTaskId(null);
       setEditingText('');
       setSaveSuccess(true);
       fetchTasks();
       setTimeout(() => setSaveSuccess(false), 2000);
-    } catch {
+    } catch (err) {
+      console.error('❌ Failed to save edit for task:', task, err);
       setError(t.errorUpdate);
     }
   };
 
   const startEdit = (task) => {
+    console.log('✏️ Start editing task:', task);
     setEditingTaskId(task.id);
     setEditingText(task.title);
   };
 
   const cancelEdit = () => {
+    console.log('❌ Cancel editing');
     setEditingTaskId(null);
     setEditingText('');
   };
@@ -139,7 +151,12 @@ function App() {
           placeholder={t.placeholder}
           style={styles.input}
         />
-        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={addTask} style={styles.addButton}>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={addTask}
+          style={styles.addButton}
+        >
           {t.add}
         </motion.button>
       </div>
@@ -149,7 +166,10 @@ function App() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             key={f}
-            onClick={() => setFilter(f)}
+            onClick={() => {
+              console.log('🔍 Filter changed to:', f);
+              setFilter(f);
+            }}
             style={{
               ...styles.filterButton,
               backgroundColor: filter === f ? '#1976d2' : '#2196f3',

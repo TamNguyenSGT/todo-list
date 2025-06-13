@@ -103,7 +103,7 @@ const styles = {
     borderRadius: 6,
   },
   editButton: {
-    backgroundColor: '#ffc107',
+    backgroundColor: '#2196f3',
     border: 'none',
     padding: '6px 10px',
     borderRadius: 6,
