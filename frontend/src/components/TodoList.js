@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getTodos, addTodo } from '../services/todoService';
-import TodoItem from './TodoItem';
-import Filter from './Filter';
+import TodoItem from './components/TodoItem';
+import Filter from './components/Filter';
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);

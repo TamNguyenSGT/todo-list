@@ -8,4 +8,4 @@ app.use(express.json());
 const todoRoutes = require('./routes/todos');
 app.use('/api/todos', todoRoutes);
 
-app.listen(3002, () => console.log('Server running on port 3002'));
+app.listen(3001, () => console.log('🚀 Server running on http://localhost:3001'));
