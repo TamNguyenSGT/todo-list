@@ -5,47 +5,21 @@ import TodoItem from './components/TodoItem';
 
 const BASE_URL = 'http://localhost:3002/api/todos';
 
-const translations = {
-  en: {
-    title: '📝 TODO List',
-    placeholder: 'Enter a new task',
-    add: 'Add',
-    all: 'All',
-    active: 'Active',
-    completed: 'Completed',
-    edit: 'Edit',
-    delete: 'Delete',
-    save: 'Save',
-    cancel: 'Cancel',
-    errorLoad: '⚠️ Failed to load tasks',
-    errorAdd: '⚠️ Failed to add task',
-    errorUpdate: '⚠️ Failed to update task',
-    errorDelete: '⚠️ Failed to delete task',
-    language: 'Language',
-    theme: 'Theme',
-    dark: 'Dark',
-    light: 'Light',
-  },
-  vi: {
-    title: '📝 Danh sách công việc',
-    placeholder: 'Nhập công việc mới',
-    add: 'Thêm',
-    all: 'Tất cả',
-    active: 'Chưa hoàn thành',
-    completed: 'Đã hoàn thành',
-    edit: 'Sửa',
-    delete: 'Xóa',
-    save: 'Lưu',
-    cancel: 'Hủy',
-    errorLoad: '⚠️ Không thể tải danh sách',
-    errorAdd: '⚠️ Không thể thêm công việc',
-    errorUpdate: '⚠️ Không thể cập nhật',
-    errorDelete: '⚠️ Không thể xóa',
-    language: 'Ngôn ngữ',
-    theme: 'Giao diện',
-    dark: 'Tối',
-    light: 'Sáng',
-  },
+const t = {
+  title: '📝 TODO List',
+  placeholder: 'Enter a new task',
+  add: 'Add',
+  all: 'All',
+  active: 'Active',
+  completed: 'Completed',
+  edit: 'Edit',
+  delete: 'Delete',
+  save: 'Save',
+  cancel: 'Cancel',
+  errorLoad: '⚠️ Failed to load tasks',
+  errorAdd: '⚠️ Failed to add task',
+  errorUpdate: '⚠️ Failed to update task',
+  errorDelete: '⚠️ Failed to delete task',
 };
 
 function App() {
@@ -55,11 +29,7 @@ function App() {
   const [filter, setFilter] = useState('all');
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingText, setEditingText] = useState('');
-  const [language, setLanguage] = useState('en');
-  const [darkMode, setDarkMode] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-
-  const t = translations[language];
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -69,7 +39,7 @@ function App() {
     } catch {
       setError(t.errorLoad);
     }
-  }, [t.errorLoad]);
+  }, []);
 
   useEffect(() => {
     fetchTasks();
@@ -124,28 +94,26 @@ function App() {
     }
   };
 
+  const startEdit = (task) => {
+    setEditingTaskId(task.id);
+    setEditingText(task.title);
+  };
+
+  const cancelEdit = () => {
+    setEditingTaskId(null);
+    setEditingText('');
+  };
+
   const filteredTasks = tasks.filter((task) => {
     if (filter === 'active') return !task.completed;
     if (filter === 'completed') return task.completed;
     return true;
   });
 
-  const theme = darkMode ? darkTheme : lightTheme;
-
   return (
-    <motion.div style={{ ...styles.container, ...theme.container }}>
+    <motion.div style={styles.container}>
       <div style={styles.header}>
         <h1>{t.title}</h1>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <select value={language} onChange={(e) => setLanguage(e.target.value)} style={styles.select}>
-            <option value="en">English</option>
-            <option value="vi">Tiếng Việt</option>
-          </select>
-          <select value={darkMode ? 'dark' : 'light'} onChange={(e) => setDarkMode(e.target.value === 'dark')} style={styles.select}>
-            <option value="light">{t.light}</option>
-            <option value="dark">{t.dark}</option>
-          </select>
-        </div>
       </div>
 
       <AnimatePresence>
@@ -169,9 +137,9 @@ function App() {
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           placeholder={t.placeholder}
-          style={{ ...styles.input, ...theme.input }}
+          style={styles.input}
         />
-        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={addTask} style={theme.addButton}>
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={addTask} style={styles.addButton}>
           {t.add}
         </motion.button>
       </div>
@@ -184,8 +152,8 @@ function App() {
             onClick={() => setFilter(f)}
             style={{
               ...styles.filterButton,
-              backgroundColor: filter === f ? theme.activeFilter : theme.buttonBg,
-              color: theme.buttonColor,
+              backgroundColor: filter === f ? '#1976d2' : '#2196f3',
+              color: '#fff',
             }}
           >
             {t[f]}
@@ -199,14 +167,14 @@ function App() {
             <TodoItem
               key={task.id}
               task={task}
-              editingTaskId={editingTaskId}
+              isEditing={editingTaskId === task.id}
               editingText={editingText}
-              setEditingTaskId={setEditingTaskId}
-              setEditingText={setEditingText}
-              onSaveEdit={saveEdit}
+              onChangeEditText={setEditingText}
+              onStartEdit={startEdit}
+              onSave={saveEdit}
+              onCancel={cancelEdit}
               onDelete={deleteTask}
               onToggle={toggleComplete}
-              theme={theme}
               t={t}
             />
           ))}
@@ -218,21 +186,19 @@ function App() {
 
 const styles = {
   container: {
+    backgroundColor: '#282c34',
+    color: 'white',
     padding: 20,
     fontFamily: 'Arial, sans-serif',
     maxWidth: 700,
     margin: 'auto',
     borderRadius: 12,
+    minHeight: '100vh',
   },
   header: {
     display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 20,
-  },
-  select: {
-    padding: '6px 12px',
-    borderRadius: 6,
   },
   inputGroup: {
     marginBottom: 20,
@@ -244,6 +210,14 @@ const styles = {
     marginRight: 10,
     borderRadius: 6,
     border: '1px solid #ccc',
+  },
+  addButton: {
+    backgroundColor: '#4caf50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: 6,
+    padding: '10px 16px',
+    cursor: 'pointer',
   },
   filterGroup: {
     marginBottom: 20,
@@ -259,36 +233,6 @@ const styles = {
     paddingLeft: 0,
     listStyle: 'none',
   },
-};
-
-const lightTheme = {
-  container: { backgroundColor: '#fff', color: '#000', boxShadow: '0 0 15px rgba(0,0,0,0.1)' },
-  input: { backgroundColor: '#fff', color: '#000' },
-  addButton: { backgroundColor: '#4caf50', color: '#fff', border: 'none', borderRadius: 6, padding: '10px 16px', cursor: 'pointer' },
-  editButton: { backgroundColor: '#ffc107', border: 'none', padding: '6px 10px', borderRadius: 6, cursor: 'pointer' },
-  deleteButton: { backgroundColor: '#f44336', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: 6, cursor: 'pointer' },
-  saveButton: { backgroundColor: '#4caf50', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: 6, cursor: 'pointer' },
-  cancelButton: { backgroundColor: '#9e9e9e', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: 6, cursor: 'pointer' },
-  buttonBg: '#2196f3',
-  buttonColor: '#fff',
-  activeFilter: '#1976d2',
-  taskItem: { backgroundColor: '#f7f7f7', padding: 10, borderRadius: 6, display: 'flex', alignItems: 'center', gap: 10 },
-  text: '#000',
-};
-
-const darkTheme = {
-  container: { backgroundColor: '#121212', color: '#fff', boxShadow: '0 0 20px rgba(255,255,255,0.1)' },
-  input: { backgroundColor: '#1e1e1e', color: '#fff', border: '1px solid #444' },
-  addButton: { backgroundColor: '#66bb6a', color: '#fff', border: 'none', borderRadius: 6, padding: '10px 16px', cursor: 'pointer' },
-  editButton: { backgroundColor: '#ffb300', border: 'none', padding: '6px 10px', borderRadius: 6, cursor: 'pointer', color: '#000' },
-  deleteButton: { backgroundColor: '#e53935', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: 6, cursor: 'pointer' },
-  saveButton: { backgroundColor: '#43a047', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: 6, cursor: 'pointer' },
-  cancelButton: { backgroundColor: '#757575', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: 6, cursor: 'pointer' },
-  buttonBg: '#424242',
-  buttonColor: '#fff',
-  activeFilter: '#64b5f6',
-  taskItem: { backgroundColor: '#1e1e1e', padding: 10, borderRadius: 6, display: 'flex', alignItems: 'center', gap: 10 },
-  text: '#fff',
 };
 
 export default App;
