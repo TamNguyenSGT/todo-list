@@ -16,10 +16,10 @@ const t = {
   delete: 'Delete',
   save: 'Save',
   cancel: 'Cancel',
-  errorLoad: '⚠️ Failed to load tasks',
-  errorAdd: '⚠️ Failed to add task',
-  errorUpdate: '⚠️ Failed to update task',
-  errorDelete: '⚠️ Failed to delete task',
+  errorLoad: 'Failed to load tasks',
+  errorAdd: 'Failed to add task',
+  errorUpdate: 'Failed to update task',
+  errorDelete: 'Failed to delete task',
 };
 
 function App() {
@@ -34,11 +34,11 @@ function App() {
   const fetchTasks = useCallback(async () => {
     try {
       const res = await axios.get(`${BASE_URL}/tasks`);
-      console.log('✅ Loaded tasks:', res.data);
+      console.log('Loaded tasks:', res.data);
       setTasks(res.data);
       setError(null);
     } catch (err) {
-      console.error('❌ Failed to load tasks:', err);
+      console.error('Failed to load tasks:', err);
       setError(t.errorLoad);
     }
   }, []);
@@ -51,11 +51,11 @@ function App() {
     if (!newTask.trim()) return;
     try {
       await axios.post(`${BASE_URL}/tasks`, { title: newTask });
-      console.log('➕ Added task:', newTask);
+      console.log('Added task:', newTask);
       setNewTask('');
       fetchTasks();
     } catch (err) {
-      console.error('❌ Failed to add task:', err);
+      console.error('Failed to add task:', err);
       setError(t.errorAdd);
     }
   };
@@ -63,10 +63,10 @@ function App() {
   const deleteTask = async (id) => {
     try {
       await axios.delete(`${BASE_URL}/tasks/${id}`);
-      console.log('🗑️ Deleted task ID:', id);
+      console.log('Deleted task ID:', id);
       fetchTasks();
     } catch (err) {
-      console.error('❌ Failed to delete task ID:', id, err);
+      console.error('Failed to delete task ID:', id, err);
       setError(t.errorDelete);
     }
   };
@@ -77,10 +77,10 @@ function App() {
         title: task.title,
         completed: !task.completed,
       });
-      console.log(`🔁 Toggled task "${task.title}" to ${!task.completed ? 'incomplete' : 'completed'}`);
+      console.log(`Toggled task "${task.title}" to ${!task.completed ? 'incomplete' : 'completed'}`);
       fetchTasks();
     } catch (err) {
-      console.error('❌ Failed to toggle task:', task, err);
+      console.error('Failed to toggle task:', task, err);
       setError(t.errorUpdate);
     }
   };
@@ -92,26 +92,26 @@ function App() {
         title: editingText,
         completed: task.completed,
       });
-      console.log('💾 Saved edit for task ID:', task.id, 'New title:', editingText);
+      console.log('Saved edit for task ID:', task.id, 'New title:', editingText);
       setEditingTaskId(null);
       setEditingText('');
       setSaveSuccess(true);
       fetchTasks();
       setTimeout(() => setSaveSuccess(false), 2000);
     } catch (err) {
-      console.error('❌ Failed to save edit for task:', task, err);
+      console.error('Failed to save edit for task:', task, err);
       setError(t.errorUpdate);
     }
   };
 
   const startEdit = (task) => {
-    console.log('✏️ Start editing task:', task);
+    console.log('Start editing task:', task);
     setEditingTaskId(task.id);
     setEditingText(task.title);
   };
 
   const cancelEdit = () => {
-    console.log('❌ Cancel editing');
+    console.log('Cancel editing');
     setEditingTaskId(null);
     setEditingText('');
   };
@@ -137,7 +137,7 @@ function App() {
             transition={{ duration: 0.4 }}
             style={{ color: 'green', marginBottom: 10, fontWeight: 'bold' }}
           >
-            ✅ {t.save}!
+             {t.save}!
           </motion.div>
         )}
       </AnimatePresence>
@@ -167,7 +167,7 @@ function App() {
             whileHover={{ scale: 1.05 }}
             key={f}
             onClick={() => {
-              console.log('🔍 Filter changed to:', f);
+              console.log('Filter changed to:', f);
               setFilter(f);
             }}
             style={{
