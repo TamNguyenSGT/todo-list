@@ -40,6 +40,18 @@ const TaskListScreen = () => {
     }
   };
 
+  const handleToggleStatus = async (task) => {
+    try {
+      await axios.put(`http://localhost:3002/api/tasks/${task.id}`, {
+        ...task,
+        status: task.status === 'completed' ? 'active' : 'completed',
+      });
+      fetchTasks();
+    } catch (error) {
+      console.error('Failed to update task status:', error);
+    }
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">📝 Task List</h1>
@@ -65,7 +77,7 @@ const TaskListScreen = () => {
           <tr>
             <th className="border border-gray-300 p-2">ID</th>
             <th className="border border-gray-300 p-2">Title</th>
-            <th className="border border-gray-300 p-2">Status</th>
+            <th className="border border-gray-300 p-2">Completed</th>
             <th className="border border-gray-300 p-2">Actions</th>
           </tr>
         </thead>
@@ -74,7 +86,13 @@ const TaskListScreen = () => {
             <tr key={task.id} className="text-center">
               <td className="border border-gray-300 p-2">{task.id}</td>
               <td className="border border-gray-300 p-2">{task.title}</td>
-              <td className="border border-gray-300 p-2">{task.status}</td>
+              <td className="border border-gray-300 p-2">
+                <input
+                  type="checkbox"
+                  checked={task.status === 'completed'}
+                  onChange={() => handleToggleStatus(task)}
+                />
+              </td>
               <td className="border border-gray-300 p-2">
                 <button className="text-blue-600 hover:underline mr-2">Edit</button>
                 <button
