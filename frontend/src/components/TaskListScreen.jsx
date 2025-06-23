@@ -6,6 +6,8 @@ const TaskListScreen = () => {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editingTitle, setEditingTitle] = useState('');
+  const [filterTitle, setFilterTitle] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
 
   const fetchTasks = async () => {
     try {
@@ -74,11 +76,18 @@ const TaskListScreen = () => {
     }
   };
 
+  // Filtered result
+  const filteredTasks = tasks.filter((task) => {
+    const matchesTitle = task.title.toLowerCase().includes(filterTitle.toLowerCase());
+    const matchesStatus =
+      filterStatus === 'all' || task.status === filterStatus;
+    return matchesTitle && matchesStatus;
+  });
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">📝 Task List</h1>
 
-      {/* Add Task Input */}
       <div className="mb-6 flex gap-2">
         <input
           type="text"
@@ -95,6 +104,25 @@ const TaskListScreen = () => {
         </button>
       </div>
 
+      <div className="mb-6 flex gap-4 items-center">
+        <input
+          type="text"
+          placeholder="Filter by title..."
+          className="p-2 border border-gray-300 rounded w-full"
+          value={filterTitle}
+          onChange={(e) => setFilterTitle(e.target.value)}
+        />
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="p-2 border border-gray-300 rounded"
+        >
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+
       <table className="w-full border-collapse border border-gray-300">
         <thead className="bg-gray-100">
           <tr>
@@ -105,7 +133,7 @@ const TaskListScreen = () => {
           </tr>
         </thead>
         <tbody>
-          {tasks.map((task) => (
+          {filteredTasks.map((task) => (
             <tr key={task.id} className="text-center">
               <td className="border border-gray-300 p-2">{task.id}</td>
               <td className="border border-gray-300 p-2">
