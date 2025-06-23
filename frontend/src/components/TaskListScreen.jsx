@@ -1,26 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const TaskListScreen = () => {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get('http://localhost:3002/api/tasks');
+        setTasks(response.data);
+      } catch (error) {
+        console.error('Failed to fetch tasks:', error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">📝 Task List</h1>
-
-      <div className="flex gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Filter by title..."
-          className="p-2 border border-gray-300 rounded w-full"
-          disabled
-        />
-        <select
-          className="p-2 border border-gray-300 rounded"
-          disabled
-        >
-          <option value="All">All</option>
-          <option value="Active">Active</option>
-          <option value="Completed">Completed</option>
-        </select>
-      </div>
 
       <table className="w-full border-collapse border border-gray-300">
         <thead className="bg-gray-100">
@@ -32,33 +31,19 @@ const TaskListScreen = () => {
           </tr>
         </thead>
         <tbody>
-          <tr className="text-center">
-            <td className="border border-gray-300 p-2">1</td>
-            <td className="border border-gray-300 p-2">Sample Task</td>
-            <td className="border border-gray-300 p-2">Active</td>
-            <td className="border border-gray-300 p-2">
-              <button className="text-blue-600 hover:underline mr-2">Edit</button>
-              <button className="text-red-600 hover:underline">Delete</button>
-            </td>
-          </tr>
+          {tasks.map((task) => (
+            <tr key={task.id} className="text-center">
+              <td className="border border-gray-300 p-2">{task.id}</td>
+              <td className="border border-gray-300 p-2">{task.title}</td>
+              <td className="border border-gray-300 p-2">{task.status}</td>
+              <td className="border border-gray-300 p-2">
+                <button className="text-blue-600 hover:underline mr-2">Edit</button>
+                <button className="text-red-600 hover:underline">Delete</button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
-
-      {/* Add Task placeholder */}
-      <div className="mt-6 flex gap-2">
-        <input
-          type="text"
-          placeholder="New task title..."
-          className="p-2 border border-gray-300 rounded w-full"
-          disabled
-        />
-        <button
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-          disabled
-        >
-          + Add Task
-        </button>
-      </div>
     </div>
   );
 };
