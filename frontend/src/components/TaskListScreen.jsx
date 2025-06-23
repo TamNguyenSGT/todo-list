@@ -1,12 +1,10 @@
 import React from 'react';
 
-// issue_01-UI-List-Screen: Table layout only
 const TaskListScreen = () => {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">📝 Task List</h1>
 
-      {/* Filter UI placeholder */}
       <div className="flex gap-4 mb-6">
         <input
           type="text"
@@ -24,7 +22,6 @@ const TaskListScreen = () => {
         </select>
       </div>
 
-      {/* issue_01-UI-List-Screen: Table */}
       <table className="w-full border-collapse border border-gray-300">
         <thead className="bg-gray-100">
           <tr>
