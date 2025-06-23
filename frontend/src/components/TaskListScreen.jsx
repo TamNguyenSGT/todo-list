@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+// issue_08-UI-Error-Handling: Show error messages for failed actions
 const TaskListScreen = () => {
   const [tasks, setTasks] = useState([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -8,6 +9,12 @@ const TaskListScreen = () => {
   const [editingTitle, setEditingTitle] = useState('');
   const [filterTitle, setFilterTitle] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const showError = (msg) => {
+    setErrorMessage(msg);
+    setTimeout(() => setErrorMessage(''), 3000);
+  };
 
   const fetchTasks = async () => {
     try {
@@ -15,6 +22,7 @@ const TaskListScreen = () => {
       setTasks(response.data);
     } catch (error) {
       console.error('Failed to fetch tasks:', error);
+      showError('Failed to load tasks');
     }
   };
 
@@ -32,6 +40,7 @@ const TaskListScreen = () => {
       fetchTasks();
     } catch (error) {
       console.error('Failed to add task:', error);
+      showError('Failed to add task');
     }
   };
 
@@ -41,6 +50,7 @@ const TaskListScreen = () => {
       fetchTasks();
     } catch (error) {
       console.error('Failed to delete task:', error);
+      showError('Failed to delete task');
     }
   };
 
@@ -53,6 +63,7 @@ const TaskListScreen = () => {
       fetchTasks();
     } catch (error) {
       console.error('Failed to update task status:', error);
+      showError('Failed to update task');
     }
   };
 
@@ -73,6 +84,7 @@ const TaskListScreen = () => {
       fetchTasks();
     } catch (error) {
       console.error('Failed to edit task:', error);
+      showError('Failed to save changes');
     }
   };
 
@@ -88,6 +100,13 @@ const TaskListScreen = () => {
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">📝 Task List</h1>
 
+      {errorMessage && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+          {errorMessage}
+        </div>
+      )}
+
+      {/* Add Task Input */}
       <div className="mb-6 flex gap-2">
         <input
           type="text"
@@ -104,6 +123,7 @@ const TaskListScreen = () => {
         </button>
       </div>
 
+      {/* Filter UI */}
       <div className="mb-6 flex gap-4 items-center">
         <input
           type="text"
