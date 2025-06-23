@@ -31,6 +31,15 @@ const TaskListScreen = () => {
     }
   };
 
+  const handleDeleteTask = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3002/api/tasks/${id}`);
+      fetchTasks();
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+    }
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">📝 Task List</h1>
@@ -68,7 +77,12 @@ const TaskListScreen = () => {
               <td className="border border-gray-300 p-2">{task.status}</td>
               <td className="border border-gray-300 p-2">
                 <button className="text-blue-600 hover:underline mr-2">Edit</button>
-                <button className="text-red-600 hover:underline">Delete</button>
+                <button
+                  onClick={() => handleDeleteTask(task.id)}
+                  className="text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
