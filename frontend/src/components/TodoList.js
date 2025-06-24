@@ -10,6 +10,8 @@ import {
 function TodoList() {
   const [todos, setTodos] = useState([]);
   const [newTitle, setNewTitle] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [editText, setEditText] = useState("");
 
   useEffect(() => {
     loadTodos();
@@ -56,38 +58,72 @@ function TodoList() {
     }
   };
 
- return (
-  <div>
-    <h2>Todo List</h2>
-    <input
-      value={newTitle}
-      onChange={(e) => setNewTitle(e.target.value)}
-      placeholder="Enter new task"
-    />
-    <button onClick={handleCreate}>Add</button>
-    <ul>
-      <AnimatePresence>
-        {todos.map((todo) => (
-          <motion.li
-            key={todo.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ duration: 0.2 }}
-          >
-            <input
-              type="checkbox"
-              checked={todo.completed}
-              onChange={() => handleToggle(todo)}
-            />
-            {todo.title}
-            <button onClick={() => handleDelete(todo.id)}>Delete</button>
-          </motion.li>
-        ))}
-      </AnimatePresence>
-    </ul>
-  </div>
- )
+  const startEditing = (todo) => {
+    setEditingId(todo.id);
+    setEditText(todo.title);
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditText("");
+  };
+
+  const handleEditSave = async (id) => {
+    try {
+      const updated = await updateTodo(id, { title: editText, completed: false });
+      setTodos(todos.map((t) => (t.id === id ? updated : t)));
+      cancelEditing();
+    } catch (err) {
+      console.error("Failed to edit todo:", err);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Todo List</h2>
+      <input
+        value={newTitle}
+        onChange={(e) => setNewTitle(e.target.value)}
+        placeholder="Enter new task"
+      />
+      <button onClick={handleCreate}>Add</button>
+      <ul>
+        <AnimatePresence>
+          {todos.map((todo) => (
+            <motion.li
+              key={todo.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.2 }}
+            >
+              {editingId === todo.id ? (
+                <>
+                  <input
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                  />
+                  <button onClick={() => handleEditSave(todo.id)}>Save</button>
+                  <button onClick={cancelEditing}>Cancel</button>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() => handleToggle(todo)}
+                  />
+                  {todo.title}
+                  <button onClick={() => startEditing(todo)}>Edit</button>
+                  <button onClick={() => handleDelete(todo.id)}>Delete</button>
+                </>
+              )}
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </ul>
+    </div>
+  );
 }
 
 export default TodoList;
