@@ -23,7 +23,7 @@ app.get("/db-check", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("TODO App Backend is running.");
+  res.send("TODO App Backend is running");
 });
 
 app.listen(PORT, () => {
