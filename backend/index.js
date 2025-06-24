@@ -15,8 +15,6 @@ app.use(express.json());
 
 app.use("/api/todos", todoRoutes);
 
-app.use(express.static(path.join(__dirname, "../frontend/build")));
-
 app.get("/db-check", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT 1 + 1 AS result");
@@ -26,9 +24,6 @@ app.get("/db-check", async (req, res) => {
   }
 });
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
-});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
