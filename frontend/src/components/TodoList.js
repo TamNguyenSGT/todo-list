@@ -1,5 +1,4 @@
-// src/components/TodoList.js
-
+import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import {
   fetchTodos,
@@ -57,18 +56,25 @@ function TodoList() {
     }
   };
 
-  return (
-    <div>
-      <h2>Todo List</h2>
-      <input
-        value={newTitle}
-        onChange={(e) => setNewTitle(e.target.value)}
-        placeholder="Enter new task"
-      />
-      <button onClick={handleCreate}>Add</button>
-      <ul>
+ return (
+  <div>
+    <h2>Todo List</h2>
+    <input
+      value={newTitle}
+      onChange={(e) => setNewTitle(e.target.value)}
+      placeholder="Enter new task"
+    />
+    <button onClick={handleCreate}>Add</button>
+    <ul>
+      <AnimatePresence>
         {todos.map((todo) => (
-          <li key={todo.id}>
+          <motion.li
+            key={todo.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.2 }}
+          >
             <input
               type="checkbox"
               checked={todo.completed}
@@ -76,11 +82,12 @@ function TodoList() {
             />
             {todo.title}
             <button onClick={() => handleDelete(todo.id)}>Delete</button>
-          </li>
+          </motion.li>
         ))}
-      </ul>
-    </div>
-  );
+      </AnimatePresence>
+    </ul>
+  </div>
+ )
 }
 
 export default TodoList;
