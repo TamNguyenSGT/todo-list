@@ -12,6 +12,7 @@ function TodoList() {
   const [newTitle, setNewTitle] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     loadTodos();
@@ -78,6 +79,12 @@ function TodoList() {
     }
   };
 
+  const filteredTodos = todos.filter((todo) => {
+    if (filter === "active") return !todo.completed;
+    if (filter === "completed") return todo.completed;
+    return true;
+  });
+
   return (
     <div>
       <h2>Todo List</h2>
@@ -87,9 +94,16 @@ function TodoList() {
         placeholder="Enter new task"
       />
       <button onClick={handleCreate}>Add</button>
+
+      <div style={{ marginTop: "1rem" }}>
+        <button onClick={() => setFilter("all")} disabled={filter === "all"}>All</button>
+        <button onClick={() => setFilter("active")} disabled={filter === "active"}>Active</button>
+        <button onClick={() => setFilter("completed")} disabled={filter === "completed"}>Completed</button>
+      </div>
+
       <ul>
         <AnimatePresence>
-          {todos.map((todo) => (
+          {filteredTodos.map((todo) => (
             <motion.li
               key={todo.id}
               initial={{ opacity: 0, x: -20 }}
