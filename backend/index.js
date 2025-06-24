@@ -7,7 +7,9 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8081;
+const todoRoutes = require("./routes/todos");
 
+app.use("/api/todos", todoRoutes);
 app.use(cors());
 app.use(express.json());
 
@@ -25,5 +27,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
