@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const path = require("path");
 const db = require("./config/db");
 
 dotenv.config();
@@ -9,9 +10,12 @@ const app = express();
 const PORT = process.env.PORT || 8081;
 const todoRoutes = require("./routes/todos");
 
-app.use("/api/todos", todoRoutes);
 app.use(cors());
 app.use(express.json());
+
+app.use("/api/todos", todoRoutes);
+
+app.use(express.static(path.join(__dirname, "../frontend/build")));
 
 app.get("/db-check", async (req, res) => {
   try {
@@ -22,8 +26,8 @@ app.get("/db-check", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("TODO App Backend is running");
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
 });
 
 app.listen(PORT, () => {
