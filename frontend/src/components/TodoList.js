@@ -1,5 +1,5 @@
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
 import {
   fetchTodos,
   createTodo,
@@ -21,7 +21,11 @@ function TodoList() {
   const loadTodos = async () => {
     try {
       const data = await fetchTodos();
-      setTodos(data);
+      if (Array.isArray(data)) {
+        setTodos(data);
+      } else {
+        console.error("Invalid data from fetchTodos:", data);
+      }
     } catch (err) {
       console.error("Failed to load todos:", err);
     }
@@ -30,9 +34,13 @@ function TodoList() {
   const handleCreate = async () => {
     if (!newTitle.trim()) return;
     try {
-      const newTodo = await createTodo(newTitle);
-      setTodos([newTodo, ...todos]);
-      setNewTitle("");
+      const newTodo = await createTodo(newTitle.trim());
+      if (newTodo?.id) {
+        setTodos((prev) => [newTodo, ...prev]);
+        setNewTitle("");
+      } else {
+        console.error("Invalid response from createTodo:", newTodo);
+      }
     } catch (err) {
       console.error("Failed to create todo:", err);
     }
@@ -44,16 +52,18 @@ function TodoList() {
         ...todo,
         completed: !todo.completed,
       });
-      setTodos(todos.map((t) => (t.id === todo.id ? updated : t)));
+      setTodos((prev) =>
+        prev.map((t) => (t.id === todo.id ? updated : t))
+      );
     } catch (err) {
-      console.error("Failed to update todo:", err);
+      console.error("Failed to toggle todo:", err);
     }
   };
 
   const handleDelete = async (id) => {
     try {
       await deleteTodo(id);
-      setTodos(todos.filter((t) => t.id !== id));
+      setTodos((prev) => prev.filter((t) => t.id !== id));
     } catch (err) {
       console.error("Failed to delete todo:", err);
     }
@@ -70,41 +80,59 @@ function TodoList() {
   };
 
   const handleEditSave = async (id) => {
+    if (!editText.trim()) return;
     try {
-      const updated = await updateTodo(id, { title: editText, completed: false });
-      setTodos(todos.map((t) => (t.id === id ? updated : t)));
+      const updated = await updateTodo(id, {
+        title: editText.trim(),
+        completed: false,
+      });
+      setTodos((prev) =>
+        prev.map((t) => (t.id === id ? updated : t))
+      );
       cancelEditing();
     } catch (err) {
       console.error("Failed to edit todo:", err);
     }
   };
 
-  const filteredTodos = Array.isArray(todos)
-  ? todos.filter((todo) => {
-      if (filter === "active") return !todo.completed;
-      if (filter === "completed") return todo.completed;
-      return true;
-    })
-  : [];
-
+  const filteredTodos = todos.filter((todo) => {
+    if (filter === "active") return !todo.completed;
+    if (filter === "completed") return todo.completed;
+    return true;
+  });
 
   return (
-    <div>
+    <div style={{ padding: "1rem" }}>
       <h2>Todo List</h2>
-      <input
-        value={newTitle}
-        onChange={(e) => setNewTitle(e.target.value)}
-        placeholder="Enter new task"
-      />
-      <button onClick={handleCreate}>Add</button>
 
-      <div style={{ marginTop: "1rem" }}>
-        <button onClick={() => setFilter("all")} disabled={filter === "all"}>All</button>
-        <button onClick={() => setFilter("active")} disabled={filter === "active"}>Active</button>
-        <button onClick={() => setFilter("completed")} disabled={filter === "completed"}>Completed</button>
+      <div>
+        <input
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          placeholder="Enter new task"
+        />
+        <button onClick={handleCreate}>Add</button>
       </div>
 
-      <ul>
+      <div style={{ marginTop: "1rem" }}>
+        <button onClick={() => setFilter("all")} disabled={filter === "all"}>
+          All
+        </button>
+        <button
+          onClick={() => setFilter("active")}
+          disabled={filter === "active"}
+        >
+          Active
+        </button>
+        <button
+          onClick={() => setFilter("completed")}
+          disabled={filter === "completed"}
+        >
+          Completed
+        </button>
+      </div>
+
+      <ul style={{ marginTop: "1rem", listStyle: "none", padding: 0 }}>
         <AnimatePresence>
           {filteredTodos.map((todo) => (
             <motion.li
@@ -113,6 +141,12 @@ function TodoList() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.2 }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                marginBottom: "0.5rem",
+              }}
             >
               {editingId === todo.id ? (
                 <>
@@ -130,7 +164,14 @@ function TodoList() {
                     checked={todo.completed}
                     onChange={() => handleToggle(todo)}
                   />
-                  {todo.title}
+                  <span
+                    style={{
+                      textDecoration: todo.completed ? "line-through" : "none",
+                      flex: 1,
+                    }}
+                  >
+                    {todo.title}
+                  </span>
                   <button onClick={() => startEditing(todo)}>Edit</button>
                   <button onClick={() => handleDelete(todo.id)}>Delete</button>
                 </>

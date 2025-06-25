@@ -1,28 +1,22 @@
-const API_BASE = process.env.REACT_APP_API_URL;
+import axios from "axios";
+
+const API_URL = "http://localhost:8081/api/todos"; 
 
 export const fetchTodos = async () => {
-  const res = await fetch(API_BASE);
-  return await res.json();
+  const response = await axios.get(API_URL);
+  return response.data;
 };
 
 export const createTodo = async (title) => {
-  const res = await fetch(API_BASE, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title }),
-  });
-  return await res.json();
+  const response = await axios.post(API_URL, { title });
+  return response.data;
 };
 
-export const updateTodo = async (id, data) => {
-  const res = await fetch(`${API_BASE}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return await res.json();
+export const updateTodo = async (id, updatedData) => {
+  const response = await axios.put(`${API_URL}/${id}`, updatedData);
+  return response.data;
 };
 
 export const deleteTodo = async (id) => {
-  await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
+  await axios.delete(`${API_URL}/${id}`);
 };
