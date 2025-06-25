@@ -1,4 +1,4 @@
-version: "3.8"
+
 
 services:
   mysql:
@@ -10,7 +10,7 @@ services:
       MYSQL_USER: todo_user
       MYSQL_PASSWORD: todopassword
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -39,7 +39,7 @@ services:
       dockerfile: Dockerfile
     container_name: frontend
     ports:
-      - "3000:3000"
+      - "3001:80"
     depends_on:
       - backend
     networks:
