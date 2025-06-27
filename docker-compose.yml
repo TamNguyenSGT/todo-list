@@ -1,5 +1,4 @@
 version: "3.8"
-
 services:
   mysql:
     image: mysql:8.0
@@ -23,11 +22,13 @@ services:
     container_name: backend
     ports:
       - "8080:8080"
-    environment:
-      DB_HOST: mysql
-      DB_USER: todo_user
-      DB_PASSWORD: todopassword
-      DB_NAME: todo_app
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /app
+      - type: volume
+        source: backend_node_modules
+        target: /app/node_modules
     depends_on:
       - mysql
     networks:
@@ -40,6 +41,13 @@ services:
     container_name: frontend
     ports:
       - "3000:3000"
+    volumes:
+      - type: bind
+        source: ./frontend
+        target: /app
+      - type: volume
+        source: frontend_node_modules
+        target: /app/node_modules
     depends_on:
       - backend
     networks:
@@ -47,6 +55,8 @@ services:
 
 volumes:
   mysql_data:
+  backend_node_modules:
+  frontend_node_modules:
 
 networks:
   todo-network:
