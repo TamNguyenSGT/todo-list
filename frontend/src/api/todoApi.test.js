@@ -5,10 +5,10 @@ import {
   deleteTodo,
 } from "./todoApi";
 
-global.fetch = jest.fn(); // Mock global fetch
+global.fetch = jest.fn(); 
 
 afterEach(() => {
-  jest.clearAllMocks(); // Clear mock sau mỗi test
+  jest.clearAllMocks(); 
 });
 
 describe("todoApi", () => {
@@ -80,4 +80,3 @@ describe("todoApi", () => {
     await expect(fetchTodos()).rejects.toThrow("Failed to fetch todos");
   });
 });
-  
