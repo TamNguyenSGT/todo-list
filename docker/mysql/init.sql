@@ -8,5 +8,3 @@ CREATE TABLE IF NOT EXISTS todos (
 INSERT INTO todos (title, completed) VALUES 
 ('Learn Docker', false),
 ('Build a TODO app', false);
-
-SELECT * FROM todos;
