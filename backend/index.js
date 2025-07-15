@@ -1,16 +1,21 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const bodyParser = require('body-parser');
 
 dotenv.config();
 
 const db = require("./config/db");
+const todoRoutes = require("./routes/todos");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
+
+app.use("/api/todos", todoRoutes);
 
 app.get("/db-check", async (req, res) => {
   try {
