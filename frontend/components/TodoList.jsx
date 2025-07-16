@@ -54,7 +54,7 @@ export default function TodoList() {
 
   return (
     <div style={{ padding: "1rem", maxWidth: "600px", margin: "auto" }}>
-      <h2>✅ Todo List</h2>
+      <h2>Todo List</h2>
 
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
         <input
