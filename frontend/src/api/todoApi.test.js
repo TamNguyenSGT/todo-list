@@ -5,10 +5,11 @@ import {
   deleteTodo,
 } from "./todoApi";
 
-global.fetch = jest.fn(); 
+global.fetch = jest.fn();
+console.error = jest.fn(); 
 
 afterEach(() => {
-  jest.clearAllMocks(); 
+  jest.clearAllMocks();
 });
 
 describe("todoApi", () => {
@@ -16,6 +17,7 @@ describe("todoApi", () => {
     const mockData = [{ id: 1, title: "Test", completed: false }];
     fetch.mockResolvedValueOnce({
       ok: true,
+      status: 200,
       json: async () => mockData,
     });
 
@@ -30,6 +32,7 @@ describe("todoApi", () => {
 
     fetch.mockResolvedValueOnce({
       ok: true,
+      status: 201,
       json: async () => mockResponse,
     });
 
@@ -49,6 +52,7 @@ describe("todoApi", () => {
 
     fetch.mockResolvedValueOnce({
       ok: true,
+      status: 200,
       json: async () => mockResponse,
     });
 
@@ -56,6 +60,7 @@ describe("todoApi", () => {
     expect(result).toEqual(mockResponse);
     expect(fetch).toHaveBeenCalledWith(`/api/todos/${id}`, expect.objectContaining({
       method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     }));
   });
@@ -66,6 +71,7 @@ describe("todoApi", () => {
 
     fetch.mockResolvedValueOnce({
       ok: true,
+      status: 200,
       json: async () => mockResponse,
     });
 
@@ -74,10 +80,21 @@ describe("todoApi", () => {
     expect(fetch).toHaveBeenCalledWith(`/api/todos/${id}`, { method: "DELETE" });
   });
 
-  test("fetchTodos should throw on error", async () => {
-    fetch.mockResolvedValueOnce({ ok: false });
+  test("fetchTodos should throw on error response (ok: false)", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({ message: "Internal Server Error" }),
+    });
 
     await expect(fetchTodos()).rejects.toThrow("Failed to fetch todos");
+    expect(fetch).toHaveBeenCalledWith("/api/todos");
+  });
+
+  test("fetchTodos should throw on network error (e.g., disconnected)", async () => {
+    fetch.mockRejectedValueOnce(new Error("Network Error"));
+
+    await expect(fetchTodos()).rejects.toThrow("Network Error");
+    expect(fetch).toHaveBeenCalledWith("/api/todos");
   });
 });
-
