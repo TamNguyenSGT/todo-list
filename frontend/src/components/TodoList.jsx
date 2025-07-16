@@ -34,9 +34,14 @@ export default function TodoList() {
     }
   };
 
+  
   const handleToggleComplete = async (id, currentStatus) => {
     try {
-      const updated = await updateTodo(id, { completed: !currentStatus });
+      const todo = todos.find(t => t.id === id);
+      const updated = await updateTodo(id, {
+        title: todo.title,
+        completed: !currentStatus,
+      });
       setTodos(todos.map(t => (t.id === id ? updated : t)));
     } catch (error) {
       console.error("Update failed:", error);
