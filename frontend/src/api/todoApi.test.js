@@ -98,5 +98,3 @@ describe("todoApi", () => {
     expect(fetch).toHaveBeenCalledWith("/api/todos");
   });
 });
-
-
