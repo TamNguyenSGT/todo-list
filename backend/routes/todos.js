@@ -25,8 +25,29 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { title, completed } = req.body;
+
   try {
-    await db.query("UPDATE todos SET title = ?, completed = ? WHERE id = ?", [title, completed, id]);
+    const fields = [];
+    const values = [];
+
+    if (title !== undefined) {
+      fields.push("title = ?");
+      values.push(title);
+    }
+    if (completed !== undefined) {
+      fields.push("completed = ?");
+      values.push(completed);
+    }
+
+    if (fields.length === 0) {
+      return res.status(400).json({ error: "No fields to update" });
+    }
+
+    values.push(id); 
+    const sql = `UPDATE todos SET ${fields.join(", ")} WHERE id = ?`;
+
+    await db.query(sql, values);
+
     const [updated] = await db.query("SELECT * FROM todos WHERE id = ?", [id]);
     res.json(updated[0]);
   } catch (err) {
