@@ -3,7 +3,10 @@ const API_URL = "http://localhost:8080/api/todos";
 export async function fetchTodos() {
   try {
     const response = await fetch(API_URL);
-    if (!response.ok) throw new Error("Failed to fetch todos");
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch todos: ${errorText}`);
+    }
     return await response.json();
   } catch (error) {
     console.error("Error fetching todos:", error);
@@ -18,7 +21,10 @@ export async function createTodo(title) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title }),
     });
-    if (!response.ok) throw new Error("Failed to create todo");
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to create todo: ${errorText}`);
+    }
     return await response.json();
   } catch (error) {
     console.error("Error creating todo:", error);
@@ -33,7 +39,10 @@ export async function updateTodo(id, updatedTodo) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedTodo),
     });
-    if (!response.ok) throw new Error("Failed to update todo");
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to update todo: ${errorText}`);
+    }
     return await response.json();
   } catch (error) {
     console.error("Error updating todo:", error);
@@ -46,8 +55,11 @@ export async function deleteTodo(id) {
     const response = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
     });
-    if (!response.ok) throw new Error("Failed to delete todo");
-    return await response.json();
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to delete todo: ${errorText}`);
+    }
+    return true; 
   } catch (error) {
     console.error("Error deleting todo:", error);
     throw error;
