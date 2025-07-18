@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function TodoList() {
   const [todos, setTodos] = useState([]);
   const [newTitle, setNewTitle] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadTodos();
@@ -33,7 +33,7 @@ export default function TodoList() {
     if (!newTitle.trim()) return;
     try {
       const todo = await createTodo(newTitle.trim());
-      setTodos(prev => [todo, ...prev]);
+      setTodos((prev) => [todo, ...prev]);
       setNewTitle("");
     } catch (error) {
       console.error("Create failed:", error);
@@ -44,7 +44,7 @@ export default function TodoList() {
   const handleToggleComplete = async (id, currentStatus) => {
     try {
       const updated = await updateTodo(id, { completed: !currentStatus });
-      setTodos(prev => prev.map(t => (t.id === id ? updated : t)));
+      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)));
     } catch (error) {
       console.error("Update failed:", error);
       alert("Failed to update todo: " + error.message);
@@ -54,7 +54,7 @@ export default function TodoList() {
   const handleDelete = async (id) => {
     try {
       await deleteTodo(id);
-      setTodos(prev => prev.filter(t => t.id !== id));
+      setTodos((prev) => prev.filter((t) => t.id !== id));
     } catch (error) {
       console.error("Delete failed:", error);
       alert("Failed to delete todo: " + error.message);
@@ -62,15 +62,26 @@ export default function TodoList() {
   };
 
   return (
-    <div style={{ padding: "1rem", maxWidth: "600px", margin: "auto" }}>
+    <div
+      style={{
+        padding: "1.5rem",
+        maxWidth: "600px",
+        margin: "2rem auto",
+        border: "2px solid #333",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+        backgroundColor: "#fff",
+      }}
+    >
       <h2>Todo List</h2>
 
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
         <input
           type="text"
           value={newTitle}
-          onChange={e => setNewTitle(e.target.value)}
+          onChange={(e) => setNewTitle(e.target.value)}
           placeholder="New todo title"
+          style={{ flexGrow: 1 }}
         />
         <button onClick={handleCreate} disabled={!newTitle.trim()}>
           Add
@@ -82,19 +93,29 @@ export default function TodoList() {
       ) : (
         <ul style={{ listStyle: "none", padding: 0 }}>
           <AnimatePresence>
-            {todos.map(todo => (
+            {todos.map((todo) => (
               <motion.li
                 key={todo.id}
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 30 }}
                 transition={{ duration: 0.2 }}
-                style={{ marginBottom: "0.5rem", display: "flex", alignItems: "center" }}
+                style={{
+                  marginBottom: "0.5rem",
+                  padding: "0.5rem",
+                  display: "flex",
+                  alignItems: "center",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
+                }}
               >
                 <input
                   type="checkbox"
                   checked={todo.completed}
-                  onChange={() => handleToggleComplete(todo.id, todo.completed)}
+                  onChange={() =>
+                    handleToggleComplete(todo.id, todo.completed)
+                  }
                 />
                 <span
                   style={{

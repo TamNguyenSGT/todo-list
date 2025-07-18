@@ -2,7 +2,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 export async function fetchTodos() {
   try {
-    const response = await fetch(API_URL);
+    const response = await fetch(`${API_URL}/api/todos`);
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`Failed to fetch todos: ${errorText}`);
@@ -16,7 +16,7 @@ export async function fetchTodos() {
 
 export async function createTodo(title) {
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(`${API_URL}/api/todos`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title }),
@@ -34,7 +34,7 @@ export async function createTodo(title) {
 
 export async function updateTodo(id, updatedTodo) {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${API_URL}/api/todos/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedTodo),
@@ -52,7 +52,7 @@ export async function updateTodo(id, updatedTodo) {
 
 export async function deleteTodo(id) {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${API_URL}/api/todos/${id}`, {
       method: "DELETE",
     });
     if (!response.ok) {
