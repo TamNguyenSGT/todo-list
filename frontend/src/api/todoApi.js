@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api/todos";
+const API_URL = process.env.REACT_APP_API_URL;
 
 export async function fetchTodos() {
   try {
@@ -59,7 +59,7 @@ export async function deleteTodo(id) {
       const errorText = await response.text();
       throw new Error(`Failed to delete todo: ${errorText}`);
     }
-    return true; 
+    return true;
   } catch (error) {
     console.error("Error deleting todo:", error);
     throw error;
