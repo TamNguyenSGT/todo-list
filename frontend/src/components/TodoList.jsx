@@ -64,16 +64,15 @@ export default function TodoList() {
   return (
     <div
       style={{
-        padding: "1.5rem",
+        padding: "2rem",
         maxWidth: "600px",
         margin: "2rem auto",
-        border: "2px solid #333",
         borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-        backgroundColor: "#fff",
+        background: "linear-gradient(135deg, #f0f4ff, #e0ffe8)",
+        boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
       }}
     >
-      <h2>Todo List</h2>
+      <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>Todo List</h2>
 
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
         <input
@@ -81,9 +80,25 @@ export default function TodoList() {
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="New todo title"
-          style={{ flexGrow: 1 }}
+          style={{
+            flexGrow: 1,
+            padding: "0.5rem",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
         />
-        <button onClick={handleCreate} disabled={!newTitle.trim()}>
+        <button
+          onClick={handleCreate}
+          disabled={!newTitle.trim()}
+          style={{
+            padding: "0.5rem 1rem",
+            borderRadius: "8px",
+            backgroundColor: "#007bff",
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
           Add
         </button>
       </div>
@@ -97,17 +112,25 @@ export default function TodoList() {
               <motion.li
                 key={todo.id}
                 initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  backgroundColor: todo.completed ? "#d4edda" : "#f9f9f9",
+                }}
                 exit={{ opacity: 0, x: 30 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.3 }}
+                whileHover={{
+                  scale: 1.03,
+                  boxShadow: "0px 4px 12px rgba(0,0,0,0.15)",
+                }}
                 style={{
-                  marginBottom: "0.5rem",
-                  padding: "0.5rem",
+                  marginBottom: "0.75rem",
+                  padding: "0.75rem",
                   display: "flex",
                   alignItems: "center",
                   border: "1px solid #ccc",
                   borderRadius: "8px",
-                  backgroundColor: "#f9f9f9",
+                  cursor: "pointer",
                 }}
               >
                 <input
@@ -117,16 +140,34 @@ export default function TodoList() {
                     handleToggleComplete(todo.id, todo.completed)
                   }
                 />
-                <span
+                <motion.span
                   style={{
-                    marginLeft: "0.5rem",
-                    textDecoration: todo.completed ? "line-through" : "none",
+                    marginLeft: "0.75rem",
                     flexGrow: 1,
+                    fontSize: "1rem",
+                    textDecoration: todo.completed ? "line-through" : "none",
+                    color: todo.completed ? "#888" : "#000",
                   }}
+                  animate={{
+                    opacity: todo.completed ? 0.6 : 1,
+                  }}
+                  transition={{ duration: 0.3 }}
                 >
                   {todo.title}
-                </span>
-                <button onClick={() => handleDelete(todo.id)}>Delete</button>
+                </motion.span>
+                <button
+                  onClick={() => handleDelete(todo.id)}
+                  style={{
+                    backgroundColor: "#dc3545",
+                    color: "#fff",
+                    border: "none",
+                    padding: "0.4rem 0.7rem",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Delete
+                </button>
               </motion.li>
             ))}
           </AnimatePresence>
