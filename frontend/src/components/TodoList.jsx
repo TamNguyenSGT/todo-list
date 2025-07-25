@@ -183,7 +183,9 @@ export default function TodoList() {
               border: "1px solid #ccc",
               backgroundColor: filter === type ? "#007bff" : "#fff",
               color: filter === type ? "#fff" : "#000",
-              cursor: filter === type ? "default" : "pointer",
+              cursor: filter === type ? "not-allowed" : "pointer",
+              opacity: filter === type ? 0.6 : 1,
+              fontWeight: filter === type ? "bold" : "normal",
             }}
           >
             {type.charAt(0).toUpperCase() + type.slice(1)}
