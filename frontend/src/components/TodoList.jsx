@@ -191,6 +191,29 @@ export default function TodoList() {
             {type.charAt(0).toUpperCase() + type.slice(1)}
           </button>
         ))}
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          placeholder="New todo title"
+          style={{
+            flexGrow: 1,
+            padding: "0.5rem",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
+        <button
+          onClick={handleCreate}
+          disabled={!newTitle.trim()}
+          style={{
+            padding: "0.5rem 1rem",
+            borderRadius: "8px",
+            backgroundColor: "#007bff",
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Add
+        </button>
       </div>
 
       {loading ? (
@@ -220,6 +243,7 @@ export default function TodoList() {
                   alignItems: "center",
                   border: "1px solid #ccc",
                   borderRadius: "8px",
+                  cursor: "pointer",
                 }}
               >
                 <input
@@ -316,6 +340,34 @@ export default function TodoList() {
                     </button>
                   </>
                 )}
+                <motion.span
+                  style={{
+                    marginLeft: "0.75rem",
+                    flexGrow: 1,
+                    fontSize: "1rem",
+                    textDecoration: todo.completed ? "line-through" : "none",
+                    color: todo.completed ? "#888" : "#000",
+                  }}
+                  animate={{
+                    opacity: todo.completed ? 0.6 : 1,
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {todo.title}
+                </motion.span>
+                <button
+                  onClick={() => handleDelete(todo.id)}
+                  style={{
+                    backgroundColor: "#dc3545",
+                    color: "#fff",
+                    border: "none",
+                    padding: "0.4rem 0.7rem",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Delete
+                </button>
               </motion.li>
             ))}
           </AnimatePresence>
