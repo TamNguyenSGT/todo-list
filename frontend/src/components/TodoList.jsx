@@ -111,21 +111,14 @@ export default function TodoList() {
     >
       <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>Todo List</h2>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-        }}
-      >
+      <div style={{ marginBottom: "1.5rem" }}>
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search..."
           style={{
-            width: "50%",
+            width: "100%",
             padding: "0.35rem 0.75rem",
             marginBottom: "0.6rem",
             borderRadius: "6px",
@@ -133,8 +126,7 @@ export default function TodoList() {
             fontSize: "0.9rem",
           }}
         />
-
-        <div style={{ display: "flex", gap: "0.5rem", width: "100%" }}>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
           <input
             type="text"
             value={newTitle}
@@ -191,29 +183,6 @@ export default function TodoList() {
             {type.charAt(0).toUpperCase() + type.slice(1)}
           </button>
         ))}
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-          placeholder="New todo title"
-          style={{
-            flexGrow: 1,
-            padding: "0.5rem",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
-        <button
-          onClick={handleCreate}
-          disabled={!newTitle.trim()}
-          style={{
-            padding: "0.5rem 1rem",
-            borderRadius: "8px",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Add
-        </button>
       </div>
 
       {loading ? (
@@ -334,40 +303,13 @@ export default function TodoList() {
                         border: "none",
                         padding: "0.4rem 0.7rem",
                         borderRadius: "6px",
+                        cursor: "pointer",
                       }}
                     >
                       Delete
                     </button>
                   </>
                 )}
-                <motion.span
-                  style={{
-                    marginLeft: "0.75rem",
-                    flexGrow: 1,
-                    fontSize: "1rem",
-                    textDecoration: todo.completed ? "line-through" : "none",
-                    color: todo.completed ? "#888" : "#000",
-                  }}
-                  animate={{
-                    opacity: todo.completed ? 0.6 : 1,
-                  }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {todo.title}
-                </motion.span>
-                <button
-                  onClick={() => handleDelete(todo.id)}
-                  style={{
-                    backgroundColor: "#dc3545",
-                    color: "#fff",
-                    border: "none",
-                    padding: "0.4rem 0.7rem",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Delete
-                </button>
               </motion.li>
             ))}
           </AnimatePresence>
