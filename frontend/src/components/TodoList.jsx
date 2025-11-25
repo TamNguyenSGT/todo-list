@@ -6,6 +6,7 @@ import {
   deleteTodo,
 } from "../api/todoApi";
 import { motion, AnimatePresence } from "framer-motion";
+import "./TodoList.css";
 
 export default function TodoList() {
   const [todos, setTodos] = useState([]);
@@ -88,6 +89,18 @@ export default function TodoList() {
     }
   };
 
+  const handleNewTodoKey = (event) => {
+    if (event.key === "Enter") {
+      handleCreate();
+    }
+  };
+
+  const handleEditKey = (event, id) => {
+    if (event.key === "Enter") {
+      handleSaveEdit(id);
+    }
+  };
+
   const filteredTodos = todos
     .filter((todo) => {
       if (filter === "active") return !todo.completed;
@@ -98,223 +111,229 @@ export default function TodoList() {
       todo.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+  const completedCount = todos.filter((todo) => todo.completed).length;
+  const activeCount = todos.length - completedCount;
+
   return (
-    <div
-      style={{
-        padding: "2rem",
-        maxWidth: "600px",
-        margin: "2rem auto",
-        borderRadius: "12px",
-        background: "linear-gradient(135deg, #f0f4ff, #e0ffe8)",
-        boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
-      }}
-    >
-      <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>Todo List</h2>
-
-      <div style={{ marginBottom: "1.5rem" }}>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search..."
-          style={{
-            width: "100%",
-            padding: "0.35rem 0.75rem",
-            marginBottom: "0.6rem",
-            borderRadius: "6px",
-            border: "1px solid #bbb",
-            fontSize: "0.9rem",
-          }}
-        />
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <input
-            type="text"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="New todo title"
-            style={{
-              flexGrow: 1,
-              padding: "0.5rem",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-            }}
-          />
-          <button
-            onClick={handleCreate}
-            disabled={!newTitle.trim()}
-            style={{
-              padding: "0.5rem 1rem",
-              borderRadius: "8px",
-              backgroundColor: "#007bff",
-              color: "#fff",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            Add
-          </button>
+    <div className="todo-page">
+      <section className="hero-card glass">
+        <div className="hero-text">
+          <p className="eyebrow">Hôm nay</p>
+          <h1>Chạy việc rõ ràng, kết thúc gọn gàng</h1>
+          <p className="lede">
+            Nhập việc, lọc nhanh, đánh dấu xong ngay trên bảng. Không cần
+            rườm rà hay mở thêm tab.
+          </p>
+          <div className="chip-row">
+            <span className="chip">API connected</span>
+            <span className="chip chip-outline">Inline edit</span>
+            <span className="chip chip-warm">Tập trung</span>
+          </div>
         </div>
-      </div>
+        <div className="stat-grid">
+          <div className="stat-card">
+            <span className="stat-label">Tổng việc</span>
+            <strong className="stat-value">{todos.length}</strong>
+            <small className="stat-sub">đang có</small>
+          </div>
+          <div className="stat-card">
+            <span className="stat-label">Đang làm</span>
+            <strong className="stat-value">{activeCount}</strong>
+            <small className="stat-sub">chưa hoàn thành</small>
+          </div>
+          <div className="stat-card">
+            <span className="stat-label">Hoàn tất</span>
+            <strong className="stat-value">{completedCount}</strong>
+            <small className="stat-sub">đã đánh dấu</small>
+          </div>
+        </div>
+      </section>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "1rem",
-          marginBottom: "1.5rem",
-        }}
-      >
-        {["all", "active", "completed"].map((type) => (
-          <button
-            key={type}
-            onClick={() => setFilter(type)}
-            disabled={filter === type}
-            style={{
-              padding: "0.4rem 1rem",
-              borderRadius: "6px",
-              border: "1px solid #ccc",
-              backgroundColor: filter === type ? "#007bff" : "#fff",
-              color: filter === type ? "#fff" : "#000",
-              cursor: filter === type ? "not-allowed" : "pointer",
-              opacity: filter === type ? 0.6 : 1,
-              fontWeight: filter === type ? "bold" : "normal",
-            }}
-          >
-            {type.charAt(0).toUpperCase() + type.slice(1)}
-          </button>
-        ))}
-      </div>
+      <section className="panel glass">
+        <div className="control-grid">
+          <label className="field">
+            <span className="field-label">Tìm nhanh</span>
+            <div className="input-shell">
+              <span className="icon" aria-hidden="true">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M15.5 15.5L20 20"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                  />
+                  <circle
+                    cx="11"
+                    cy="11"
+                    r="6"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                  />
+                </svg>
+              </span>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Lọc theo tiêu đề"
+                className="input"
+              />
+            </div>
+          </label>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          <AnimatePresence>
-            {filteredTodos.map((todo) => (
-              <motion.li
-                key={todo.id}
-                initial={{ opacity: 0, x: -30 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  backgroundColor: todo.completed ? "#d4edda" : "#f9f9f9",
-                }}
-                exit={{ opacity: 0, x: 30 }}
-                transition={{ duration: 0.3 }}
-                whileHover={{
-                  scale: 1.03,
-                  boxShadow: "0px 4px 12px rgba(0,0,0,0.15)",
-                }}
-                style={{
-                  marginBottom: "0.75rem",
-                  padding: "0.75rem",
-                  display: "flex",
-                  alignItems: "center",
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
+          <label className="field">
+            <span className="field-label">Thêm công việc</span>
+            <div className="input-shell">
+              <input
+                type="text"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                onKeyDown={handleNewTodoKey}
+                placeholder="Nhập việc cần làm"
+                className="input"
+              />
+              <button
+                type="button"
+                onClick={handleCreate}
+                disabled={!newTitle.trim()}
+                className="btn primary"
               >
-                <input
-                  type="checkbox"
-                  checked={todo.completed}
-                  onChange={() =>
-                    handleToggleComplete(todo.id, todo.completed)
-                  }
-                />
+                Thêm
+              </button>
+            </div>
+          </label>
+        </div>
 
-                {editingId === todo.id ? (
-                  <>
-                    <input
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                      style={{
-                        marginLeft: "0.75rem",
-                        flexGrow: 1,
-                        padding: "0.4rem",
-                        borderRadius: "6px",
-                        border: "1px solid #aaa",
-                      }}
-                    />
-                    <button
-                      onClick={() => handleSaveEdit(todo.id)}
-                      style={{
-                        marginLeft: "0.5rem",
-                        backgroundColor: "#28a745",
-                        color: "#fff",
-                        border: "none",
-                        padding: "0.4rem 0.7rem",
-                        borderRadius: "6px",
-                      }}
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={handleCancelEdit}
-                      style={{
-                        marginLeft: "0.3rem",
-                        backgroundColor: "#6c757d",
-                        color: "#fff",
-                        border: "none",
-                        padding: "0.4rem 0.7rem",
-                        borderRadius: "6px",
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <motion.span
-                      style={{
-                        marginLeft: "0.75rem",
-                        flexGrow: 1,
-                        fontSize: "1rem",
-                        textDecoration: todo.completed
-                          ? "line-through"
-                          : "none",
-                        color: todo.completed ? "#888" : "#000",
-                      }}
-                      animate={{
-                        opacity: todo.completed ? 0.6 : 1,
-                      }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      {todo.title}
-                    </motion.span>
-                    <button
-                      onClick={() => handleEdit(todo.id, todo.title)}
-                      style={{
-                        marginRight: "0.5rem",
-                        backgroundColor: "#ffc107",
-                        color: "#000",
-                        border: "none",
-                        padding: "0.4rem 0.7rem",
-                        borderRadius: "6px",
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(todo.id)}
-                      style={{
-                        backgroundColor: "#dc3545",
-                        color: "#fff",
-                        border: "none",
-                        padding: "0.4rem 0.7rem",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </>
-                )}
-              </motion.li>
-            ))}
-          </AnimatePresence>
-        </ul>
-      )}
+        <div className="filter-row">
+          {["all", "active", "completed"].map((type) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => setFilter(type)}
+              className={`pill ${filter === type ? "is-active" : ""}`}
+              aria-pressed={filter === type}
+            >
+              {type === "all"
+                ? "Tất cả"
+                : type === "active"
+                ? "Đang làm"
+                : "Hoàn tất"}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel glass list-panel">
+        <div className="panel-head">
+          <div>
+            <p className="eyebrow">Danh sách</p>
+            <h3>Duy trì nhịp độ</h3>
+          </div>
+          <span className="badge">{filteredTodos.length} đang hiển thị</span>
+        </div>
+
+        {loading ? (
+          <div className="empty">Đang tải danh sách...</div>
+        ) : filteredTodos.length === 0 ? (
+          <div className="empty">
+            <p>Không có việc phù hợp.</p>
+            <span className="empty-sub">Thêm mới hoặc thay đổi bộ lọc.</span>
+          </div>
+        ) : (
+          <ul className="todo-list">
+            <AnimatePresence>
+              {filteredTodos.map((todo) => (
+                <motion.li
+                  key={todo.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12, scale: 0.98 }}
+                  transition={{ duration: 0.22 }}
+                  whileHover={{
+                    y: -2,
+                    boxShadow: "0 12px 30px rgba(15, 23, 42, 0.12)",
+                  }}
+                  className={`todo-item ${todo.completed ? "is-complete" : ""}`}
+                >
+                  <div className="item-main">
+                    <label className="checkbox">
+                      <input
+                        type="checkbox"
+                        checked={todo.completed}
+                        onChange={() =>
+                          handleToggleComplete(todo.id, todo.completed)
+                        }
+                      />
+                      <span className="checkbox-box" aria-hidden="true" />
+                    </label>
+
+                    {editingId === todo.id ? (
+                      <input
+                        className="edit-input"
+                        value={editText}
+                        onChange={(e) => setEditText(e.target.value)}
+                        onKeyDown={(e) => handleEditKey(e, todo.id)}
+                        autoFocus
+                      />
+                    ) : (
+                      <div className="item-text">
+                        <span className="item-title">{todo.title}</span>
+                        <span className="item-sub">
+                          {todo.completed ? "Hoàn tất" : "Chưa hoàn thành"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="item-actions">
+                    {editingId === todo.id ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveEdit(todo.id)}
+                          className="btn success"
+                        >
+                          Lưu
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          className="btn ghost"
+                        >
+                          Hủy
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleEdit(todo.id, todo.title)}
+                          className="btn ghost"
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(todo.id)}
+                          className="btn danger"
+                        >
+                          Xóa
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </motion.li>
+              ))}
+            </AnimatePresence>
+          </ul>
+        )}
+      </section>
     </div>
   );
 }
